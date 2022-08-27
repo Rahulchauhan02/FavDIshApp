@@ -4,4 +4,14 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="splash_screen">Fav Dish</string>
+    <string name="addDish">Add New Dish</string>
+    <string name="addTitle">Title</string>
+    <string name="addIngredient">Ingredients</string>
+    <string name="addCategory">Category</string>
+    <string name="addTime">Time to cook</string>
+    <string name="addDirection">Direction to cook</string>
+    <string name="addDishImage">Dish Image</string>
+    <string name="addDishTitle">ADD DISH</string>
+    <string name="addImageDialog">Select Dish Image</string>
+    <string name="selectOption">Select an option</string>
 </resources>

@@ -3,8 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/android/projects/FavDIsh/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1475" />
+        <entry key="..\:/android/projects/FavDIsh/app/src/main/res/layout/activity_add_update_dish.xml" value="0.25" />
         <entry key="..\:/android/projects/FavDIsh/app/src/main/res/layout/activity_main.xml" value="0.16576086956521738" />
         <entry key="..\:/android/projects/FavDIsh/app/src/main/res/layout/activity_splash.xml" value="0.264" />
+        <entry key="..\:/android/projects/FavDIsh/app/src/main/res/layout/add_image_select_dialog.xml" value="0.176" />
+        <entry key="..\:/android/projects/FavDIsh/app/src/main/res/menu/add_dish_menu.xml" value="0.2234375" />
       </map>
     </option>
   </component>

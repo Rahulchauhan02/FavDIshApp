@@ -1,10 +1,10 @@
-package com.mylearninghub.favdish.ui.home
+package com.mylearninghub.favdish.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class HomeViewModel : ViewModel() {
+class AllDishesFragment : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is home Fragment"
