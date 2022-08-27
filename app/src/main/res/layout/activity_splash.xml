@@ -11,7 +11,7 @@
         android:id="@+id/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="cursive"
+        android:fontFamily="@font/font_one"
         android:text="@string/splash_screen"
         android:textColor="#FFFFFF"
         android:textSize="60sp"
