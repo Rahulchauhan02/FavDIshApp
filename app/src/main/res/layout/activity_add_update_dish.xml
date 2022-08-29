@@ -37,28 +37,31 @@
            <RelativeLayout
                android:layout_width="match_parent"
                android:layout_height="match_parent">
-           <FrameLayout
-               android:layout_width="match_parent"
-               android:layout_height="@dimen/_200sdp">
+
+               <FrameLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="@dimen/_250sdp"
+                   android:background="@color/grey">
+
+                   <ImageView
+                       android:id="@+id/addDishImage"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:contentDescription="@string/addDishImage"
+                       android:scaleType="fitXY"
+                        tools:ignore="ImageContrastCheck" />
+               </FrameLayout>
 
                <ImageView
-                   android:id="@+id/addDishImage"
-                   android:layout_width="match_parent"
-                   android:layout_height="match_parent"
-                   android:contentDescription="@string/addDishImage"
-                   app:srcCompat="@color/material_dynamic_neutral70"
-                   tools:ignore="ImageContrastCheck" />
-           </FrameLayout>
-               <ImageView
+                   android:id="@+id/openDialogButton"
+                   android:layout_width="@dimen/_40sdp"
+                   android:layout_height="@dimen/_40sdp"
+                   android:layout_alignParentEnd="true"
+                   android:layout_alignParentBottom="true"
                    android:layout_marginEnd="@dimen/_25sdp"
                    android:layout_marginBottom="@dimen/_10sdp"
-                   android:layout_width="@dimen/_50sdp"
-                   android:layout_height="@dimen/_50sdp"
-                   android:src="@drawable/ic_baseline_camera_add"
-                   android:layout_alignParentBottom="true"
-                   android:layout_alignParentEnd="true"
                    android:contentDescription="@string/addImageDialog"
-                   />
+                   android:src="@drawable/ic_baseline_camera_add" />
            </RelativeLayout>
            <com.google.android.material.textfield.TextInputLayout
                android:layout_width="match_parent"
@@ -79,6 +82,27 @@
                    android:layout_margin="@dimen/_2sdp"
                    android:fontFamily="sans-serif-light"
                    android:hint="@string/addTitle"
+                   android:textSize="16sp" />
+           </com.google.android.material.textfield.TextInputLayout>
+
+           <com.google.android.material.textfield.TextInputLayout
+               android:layout_width="match_parent"
+               android:layout_marginStart="@dimen/_10sdp"
+               android:layout_marginEnd="@dimen/_10sdp"
+               app:boxStrokeColor="@color/grey"
+               app:hintTextColor="@color/grey"
+               style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+               android:layout_height="wrap_content"
+               android:padding="@dimen/_5sdp"
+               android:id="@+id/typeLayout">
+
+               <com.google.android.material.textfield.TextInputEditText
+                   android:id="@+id/typeEditText"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_margin="@dimen/_2sdp"
+                   android:fontFamily="sans-serif-light"
+                   android:hint="@string/addType"
                    android:textSize="16sp" />
            </com.google.android.material.textfield.TextInputLayout>
 
