@@ -2,29 +2,25 @@ package com.mylearninghub.favdish.view.activity
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.provider.Settings
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.mylearninghub.favdish.R
 import com.mylearninghub.favdish.databinding.ActivityAddUpdateDishBinding
 import com.mylearninghub.favdish.databinding.AddImageSelectDialogBinding
+import com.mylearninghub.favdish.utils.Utility
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
 
 
-class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener{
+class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener, EasyPermissions.PermissionCallbacks{
     private lateinit var addUpdateDishBinding: ActivityAddUpdateDishBinding
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -61,151 +57,13 @@ class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener{
         dialog.setContentView(dialogBinding.root)
         dialog.show()
         dialogBinding.camera.setOnClickListener{
-            dialog.dismiss()
-            if(Build.VERSION.SDK_INT>=28)
-            {
-                Dexter.withContext(this)
-                    .withPermissions(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ).withListener(object:MultiplePermissionsListener{
-                        override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
-
-                            if(p0!!.areAllPermissionsGranted())
-                            {
-                               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                               cameraActivityLauncher.launch(intent)
-                                dialog.dismiss()
-                            }
-                            else
-                            {
-                                showRationalDialog()
-                            }
-                        }
-                        override fun onPermissionRationaleShouldBeShown(
-                            p0: MutableList<PermissionRequest>?,
-                            p1: PermissionToken?
-                        ) {
-                            p1?.continuePermissionRequest()
-                            showRationalDialog()
-                        }
-                    }).onSameThread().check()
-            }
-            else
-            {
-                Dexter.withContext(this)
-                    .withPermissions(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ).withListener(object:MultiplePermissionsListener{
-                        override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
-
-                            if(p0!!.areAllPermissionsGranted())
-                            {
-                                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                cameraActivityLauncher.launch(intent)
-                                dialog.dismiss()
-                            }
-                            else
-                            {
-                                showRationalDialog()
-                            }
-                        }
-                        override fun onPermissionRationaleShouldBeShown(
-                            p0: MutableList<PermissionRequest>?,
-                            p1: PermissionToken?
-                        ) {
-                            p1?.continuePermissionRequest()
-                            showRationalDialog()
-                        }
-                    }).onSameThread().check()
-            }
+            cameraTask(dialog)
         }
 
         dialogBinding.gallery.setOnClickListener {
-            if(Build.VERSION.SDK_INT>=28)
-            {
-                Dexter.withContext(this)
-                    .withPermissions(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ).withListener(object:MultiplePermissionsListener{
-                        override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
-
-                            if(p0!!.areAllPermissionsGranted())
-                            {
-                                val intent = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                                galleryActivityLauncher.launch(intent)
-                                dialog.dismiss()
-                            }
-                            else
-                            {
-                                showRationalDialog()
-                            }
-                        }
-                        override fun onPermissionRationaleShouldBeShown(
-                            p0: MutableList<PermissionRequest>?,
-                            p1: PermissionToken?
-                        ) {
-                            p1?.continuePermissionRequest()
-                            showRationalDialog()
-                        }
-                    }).onSameThread().check()
+            galleryTask(dialog)
             }
-            else
-            {
-                Dexter.withContext(this)
-                    .withPermissions(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ).withListener(object:MultiplePermissionsListener{
-                        override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
-
-                            if(p0!!.areAllPermissionsGranted())
-                            {
-                                val intent = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                                galleryActivityLauncher.launch(intent)
-                                dialog.dismiss()
-                            }
-                            else
-                            {
-                                showRationalDialog()
-                            }
-                        }
-                        override fun onPermissionRationaleShouldBeShown(
-                            p0: MutableList<PermissionRequest>?,
-                            p1: PermissionToken?
-                        ) {
-                            p1?.continuePermissionRequest()
-                            showRationalDialog()
-                        }
-                    }).onSameThread().check()
-            }
-            dialog.dismiss()
-        }
     }
-
-
-   private fun showRationalDialog(){
-            AlertDialog.Builder(this)
-           .setMessage("You have denied the permission to use this feature you have to give permission")
-           .setPositiveButton("Go to Settings"){_,_ ->
-               run {
-                   try {
-                       val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        val uri = Uri.fromParts("package",packageName,null)
-                       intent.data= uri
-                       startActivity(intent)
-                   } catch (ex: Exception) {
-                       ex.printStackTrace()
-                   }
-               }
-           }
-           .setNegativeButton("Cancel"){alertDialog,_-> run { alertDialog.dismiss() } }
-           .show()
-   }
 
     var  cameraActivityLauncher =registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     {
@@ -221,5 +79,63 @@ class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener{
         {
             it.data?.let { result->addUpdateDishBinding.addDishImage.setImageURI( result.data) }
         }
+    }
+
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        Log.d(TAG, "onPermissionsGranted:" + requestCode + ":" + perms.size)
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        Log.d(TAG, "onPermissionsDenied:" + requestCode + ":" + perms.size)
+
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms))
+        {
+            AppSettingsDialog.Builder(this).build().show()
+        }
+    }
+
+    private fun cameraTask(dialog:Dialog){
+        if(hasCameraPermission()){
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            cameraActivityLauncher.launch(intent)
+            dialog.dismiss()
+        }
+        else
+        {
+            EasyPermissions.requestPermissions(this,"This app needs access to your " +
+                    "camera so you can take pictures",Utility.CAMERA_CODE,Manifest.permission.CAMERA)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+    private fun galleryTask(dialog:Dialog){
+        if(hasExternalStoragePermission()){
+            val intent = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            galleryActivityLauncher.launch(intent)
+            dialog.dismiss()
+        }
+        else{
+            EasyPermissions.requestPermissions(this,"This app needs access to your" +
+                    " Storage so you can select pictures",Utility.GALLERY_CODE,Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+
+
+    private fun hasCameraPermission():Boolean
+    {
+        return EasyPermissions.hasPermissions(this, Manifest.permission.CAMERA)
+    }
+
+    private fun hasExternalStoragePermission():Boolean{
+        return EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 }
