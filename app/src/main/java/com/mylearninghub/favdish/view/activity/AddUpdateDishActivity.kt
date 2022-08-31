@@ -4,24 +4,38 @@ import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.mylearninghub.favdish.R
 import com.mylearninghub.favdish.databinding.ActivityAddUpdateDishBinding
 import com.mylearninghub.favdish.databinding.AddImageSelectDialogBinding
 import com.mylearninghub.favdish.utils.Utility
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import java.io.File
+import java.io.FileOutputStream
+import java.util.*
 
 
 class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener, EasyPermissions.PermissionCallbacks{
     private lateinit var addUpdateDishBinding: ActivityAddUpdateDishBinding
+    private var imagePath=""
     override fun onCreate(savedInstanceState: Bundle?)
     {
         addUpdateDishBinding = ActivityAddUpdateDishBinding.inflate(layoutInflater)
@@ -65,19 +79,56 @@ class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener, EasyPe
             }
     }
 
-    var  cameraActivityLauncher =registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+    private var  cameraActivityLauncher =registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     {
         if(it.resultCode== Activity.RESULT_OK)
         {
-            it.data?.let { result->addUpdateDishBinding.addDishImage.setImageBitmap(result.extras?.get("data") as Bitmap) }
+            it.data?.let { result-> val thumbnail =result.extras?.get("data") as Bitmap
+                Glide.with(this)
+                    .load(thumbnail)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(addUpdateDishBinding.addDishImage)
+                imagePath=saveImageToInternalStorage(thumbnail)
+                Log.i("IMAGEPATH",imagePath)
+            }
         }
     }
 
-    var galleryActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+    private var galleryActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     {
         if(it.resultCode== Activity.RESULT_OK)
         {
-            it.data?.let { result->addUpdateDishBinding.addDishImage.setImageURI( result.data) }
+            it.data?.let { result-> val data=result.data
+            Glide.with(this)
+                .load(data)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .listener(object :RequestListener<Drawable>{
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                       Log.e(TAG,e?.message.toString())
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                      resource?.let {
+                      imagePath=    saveImageToInternalStorage(resource.toBitmap())
+                          Log.i("IMAGEPATH",imagePath)
+                      }
+                        return true
+                    }
+                })
+                .into(addUpdateDishBinding.addDishImage)
+            }
         }
     }
 
@@ -137,5 +188,23 @@ class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener, EasyPe
 
     private fun hasExternalStoragePermission():Boolean{
         return EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+
+    private  fun saveImageToInternalStorage(bitmap: Bitmap):String{
+        val wrapper = ContextWrapper(applicationContext)
+        var file = wrapper.getDir(Utility.IMAGE_DIRECTORY,Context.MODE_PRIVATE)
+        file = File(file ,"${UUID.randomUUID()}.jpeg")
+        try
+        {
+            val stream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
+            stream.flush()
+            stream.close()
+        }
+        catch(e:Exception)
+        {
+            e.printStackTrace()
+        }
+        return file.absolutePath
     }
 }
