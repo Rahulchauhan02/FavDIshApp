@@ -59,8 +59,11 @@ class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener, EasyPe
      {
          when(view.id)
          {
-             R.id.openDialogButton->{  showCustomDialog() }
+             R.id.openDialogButton->{  showCustomDialog()
+                                        return }
+
          }
+
      }
     }
 
@@ -99,7 +102,7 @@ class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener, EasyPe
         if(it.resultCode== Activity.RESULT_OK)
         {
             it.data?.let { result-> val data=result.data
-            Glide.with(this)
+                 Glide.with(this)
                 .load(data)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(object :RequestListener<Drawable>{
@@ -121,10 +124,10 @@ class AddUpdateDishActivity : AppCompatActivity() , View.OnClickListener, EasyPe
                         isFirstResource: Boolean
                     ): Boolean {
                       resource?.let {
-                      imagePath=    saveImageToInternalStorage(resource.toBitmap())
+                      imagePath=   saveImageToInternalStorage(resource.toBitmap())
                           Log.i("IMAGEPATH",imagePath)
                       }
-                        return true
+                        return false
                     }
                 })
                 .into(addUpdateDishBinding.addDishImage)

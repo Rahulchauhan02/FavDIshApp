@@ -15,4 +15,5 @@
     <string name="addImageDialog">Select Dish Image</string>
     <string name="selectOption">Select an option</string>
     <string name="addType">Type</string>
+    <string name="DialogTitle">Dialog Title</string>
 </resources>
